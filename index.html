@@ -1,25 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Tetris JS</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
 </head>
+
 <body>
+    <script src="Tablero.js"></script>
     <script>
+
+        const MARGEN_TABLERO = 10;  // Margen del tablero
+        let regulador_velocidad_teclas = 0; // Para regular la velocidad de las teclas
+
+        // Ajustar propiedades del canvas
         function setup() {
             createCanvas(900, 600);
+            tablero = new Tablero();
+            crearMapeoBaseTetriminos();
+            tetrimino = new Tetrimino();
+            resizeCanvas(
+                tablero.ancho + 2 * MARGEN_TABLERO,
+                tablero.alto + 2 * MARGEN_TABLERO
+            )
         }
 
         function draw() {
             background("lightgray");
+            tablero.dibujar();
+            tetrimino.dibujar();
+            keyEventsTetris();
         }
-        class Tablero{
-            constructor(){
-                this.tablero = [];
-                this.pieza = new Pieza();
+
+        function keyEventsTetris() {
+            if (millis() - regulador_velocidad_teclas < 200) {
+                return;
+            }
+            regulador_velocidad_teclas = millis();
+
+            if (keyIsDown(LEFT_ARROW)) {
+                tetrimino.moverIzquierda();
+            }
+            if (keyIsDown(RIGHT_ARROW)) {
+                tetrimino.moverDerecha(); //tetrimino.position.x++;
+            }
+            if (keyIsDown(UP_ARROW)) {
+                tetrimino.moverArriba();
+            }
+            if (keyIsDown(DOWN_ARROW)) {
+                tetrimino.moverAbajo();
             }
         }
+
+        function crearMapeoBaseTetriminos() {
+            tetriminosBase = {
+                "Z": {
+                    color: "red",
+                    mapa: [
+                        createVector(),
+                    ]
+                }
+            }
+        }
+
+        class Tetrimino {
+            constructor(nombre = "Z") {
+                this.nombre = nombre;
+                let tetriminoBase = tetriminosBase[nombre];
+                this.color = tetriminoBase.color;
+                this.mapa = []
+                for (const pmino of tetriminoBase.mapa) {
+                    this.mapa.push(pmino.copy());
+                }
+                this.position = createVector(0, 0);
+            }
+            moverDerecha() {
+                this.position.x++;
+            }
+            moverIzquierda() {
+                this.position.x--;
+            }
+            moverAbajo() {
+                this.position.y++;
+            }
+            moverArriba() {
+                this.position.y--;
+            }
+
+            get mapaTablero(){
+                let retorno = []
+                for(const pmino of this.mapa){
+                    let copy =  pmino.copy().add(this.position);
+                    retorno.push(tablero.coordenada(copy.x, copy.y))
+                }
+                return retorno;
+            }
+
+            dibujar() {
+                push()
+                fill("red");
+                for(const pmino of this.mapaTablero){
+                    rect(pmino.x, pmino.y, tablero.lado_celda)
+                }
+                pop()
+            }
+        }
+
     </script>
 </body>
+
 </html>
