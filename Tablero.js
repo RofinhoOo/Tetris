@@ -6,7 +6,7 @@ class Tablero {
         this.lado_celda = 25;
         this.ancho = this.columnas * this.lado_celda;
         this.alto = this.filas * this.lado_celda;
-        this.position = createVector(MARGEN_TABLERO, MARGEN_TABLERO);
+        this.position = createVector(MARGEN_TABLERO, MARGEN_TABLERO + this.lado_celda);
     }
 
     coordenada(x, y) {
@@ -31,3 +31,6 @@ class Tablero {
         pop();
     }
 }
+
+
+    

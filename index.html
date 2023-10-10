@@ -9,6 +9,7 @@
 
 <body>
     <script src="Tablero.js"></script>
+    <script src="Tetrimino.js"></script>
     <script>
 
         const MARGEN_TABLERO = 10;  // Margen del tablero
@@ -22,7 +23,7 @@
             tetrimino = new Tetrimino();
             resizeCanvas(
                 tablero.ancho + 2 * MARGEN_TABLERO,
-                tablero.alto + 2 * MARGEN_TABLERO
+                tablero.alto + 2 * MARGEN_TABLERO + tablero.lado_celda
             )
         }
 
@@ -53,59 +54,26 @@
             }
         }
 
-        function crearMapeoBaseTetriminos() {
-            tetriminosBase = {
-                "Z": {
-                    color: "red",
-                    mapa: [
-                        createVector(),
-                    ]
-                }
-            }
-        }
-
-        class Tetrimino {
-            constructor(nombre = "Z") {
-                this.nombre = nombre;
-                let tetriminoBase = tetriminosBase[nombre];
-                this.color = tetriminoBase.color;
-                this.mapa = []
-                for (const pmino of tetriminoBase.mapa) {
-                    this.mapa.push(pmino.copy());
-                }
-                this.position = createVector(0, 0);
-            }
-            moverDerecha() {
-                this.position.x++;
-            }
-            moverIzquierda() {
-                this.position.x--;
-            }
-            moverAbajo() {
-                this.position.y++;
-            }
-            moverArriba() {
-                this.position.y--;
-            }
-
-            get mapaTablero(){
-                let retorno = []
-                for(const pmino of this.mapa){
-                    let copy =  pmino.copy().add(this.position);
-                    retorno.push(tablero.coordenada(copy.x, copy.y))
-                }
-                return retorno;
-            }
 
             dibujar() {
                 push()
-                fill("red");
+                fill(this.color);
                 for(const pmino of this.mapaTablero){
                     rect(pmino.x, pmino.y, tablero.lado_celda)
+                    push()
+                    noStroke()
+                    fill(255, 255, 255, 80)
+                    beginShape()
+                    vertex(pmino.x, pmino.y)
+                    vertex(pmino.x + tablero.lado_celda, pmino.y)
+                    vertex(pmino.x + tablero.lado_celda, pmino.y + tablero.lado_celda)
+                    endShape(CLOSE)
+                    pop()
+                    
                 }
                 pop()
             }
-        }
+        
 
     </script>
 </body>
