@@ -7,7 +7,26 @@ class Tablero {
         this.ancho = this.columnas * this.lado_celda;
         this.alto = this.filas * this.lado_celda;
         this.position = createVector(MARGEN_TABLERO, MARGEN_TABLERO + this.lado_celda);
+
+        //memoria del tablero
+        this.minosAlmacenados = [];  
+        for(let fila = 0; fila < this.filas; fila++){
+            this.minosAlmacenados[fila] = [];
+            for(let columna = 0; columna < this.columnas; columna++){
+                this.minosAlmacenados[fila].push("");
+            }
+        }
     }
+
+    set almacenarMino(tetrimino) { 
+        for (const pmino of tetrimino.mapaTablero) {
+            if(pmino.y < 0){
+                tablero = new Tablero();
+                tetrimino = new Tetrimino();
+        }
+        this.minosAlmacenados[pmino.y][pmino.x] = tetrimino.nombre;
+    }
+}
 
     coordenada(x, y) {
         return createVector(x, y).mult(this.lado_celda).add(this.position);
@@ -29,8 +48,20 @@ class Tablero {
             }
         }
         pop();
+        this.dibujarMinosAlmacenados();
+    }
+
+    dibujarMinosAlmacenados() {
+        push();
+        for(let columna = 0; columna < this.columnas; columna++){
+            for(let fila = 0; fila < this.filas; fila++){
+                let nombreMino = this.minosAlmacenados[columna][fila];
+                if(){
+                fill(tetriminos.base[nombreMino].color)
+                    Tetrimino.dibujarMino(this.coordenada(columna, fila));
+                }
+            }
+        pop();
     }
 }
-
-
-    
+}
