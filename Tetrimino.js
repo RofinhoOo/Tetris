@@ -1,206 +1,223 @@
 class Tetrimino {
     constructor(nombre = random(["Z", "S", "J", "L", "T", "O", "I"])) {
-        this.nombre = nombre;
-        let base = tetriminosBase[nombre];
-        this.color = tetriminoBase.color;
-        this.mapa = []
-        for (const pmino of tetriminoBase.mapa) {
-            this.mapa.push(pmino.copy());
-        }
-        this.position = createVector(int(tablero.columnas / 2), 0);
+      this.nombre = nombre;
+      let base = tetriminosBase[nombre];
+      this.color = base.color;
+      this.mapa = [];
+      for (const pmino of base.mapa) {
+        this.mapa.push(pmino.copy());
+      }
+      this.posición = createVector(int(tablero.columnas / 2), -1);
     }
-    moverDerecha() {
-        this.position.x++;
-
-        if (this.movimientoErroneo) {
-            this.moverIzquierda();
-        }
-    }
-    moverIzquierda() {
-        this.position.x--;
-
-        if (this.movimientoErroneo) {
-            this.moverDerecha();
-        }
-    }
-    moverAbajo() {
-        this.position.y++;
   
-        if (this.movimientoErroneo) {
-            this.moverArriba();
-            tablero.almacenarMino = this;
-            tetrimino = new Tetrimino();
-        }
+    moverDerecha() {
+      this.posición.x++;
+      if (this.movimientoErroneo) {
+        this.moverIzquierda();
+      }
     }
+  
+    moverIzquierda() {
+      this.posición.x--;
+      if (this.movimientoErroneo) {
+        this.moverDerecha();
+      }
+    }
+  
+    moverAbajo() {
+      this.posición.y++;
+      if (this.movimientoErroneo) {
+        this.moverArriba();
+        if (tetrimino == this) {
+          tablero.almacenarMino = this;
+          tetrimino = new Tetrimino();
+        }
+        return false;
+      }
+      return true;
+    }
+  
     moverArriba() {
-        this.position.y--;
-        }
+      this.posición.y--;
     }
-
-    girar(){
-        for(const pmino of this.mapa){
-            pmino.set (pmino.y, -pmino.x);
-        }
-        if (this.movimientoErroneo) {
-            this.desgirar();
-        }
+  
+    ponerEnElFondo() {
+      this.posición = this.espectro.posición;
+      this.moverAbajo();
     }
-    desgirar(){
-        for(const pmino of this.mapa){
-            pmino.set (-pmino.y, pmino.x);
+  
+    girar() {
+      for (const pmino of this.mapa) {
+        pmino.set(pmino.y, -pmino.x);
+      }
+      if (this.movimientoErroneo) {
+        this.desgirar();
+      }
+    }
+  
+    desgirar() {
+      for (const pmino of this.mapa) {
+        pmino.set(-pmino.y, pmino.x);
+      }
+    }
+  
+    get movimientoErroneo() {
+      let salióDelTablero = !this.estáDentroDelTablero;
+      return salióDelTablero || this.colisiónConMinosAlmacenados;
+    }
+  
+    get colisiónConMinosAlmacenados() {
+      for (const pmino of this.mapaTablero) {
+        if (tablero.minosAlmacenados[pmino.x][pmino.y]) {
+          return true;
         }
+      }
+      return false;
     }
-
-    get movimientoErroneo(){
-        let salioDelTablero = !this.estaDentroDelTablero;
-        return salioDelTablero || this.colisionConMinosAlmacenados;
-
-    }
-
-    get colisionConMinosAlmacenados(){
-        for(const pmino of this.mapaTablero){
-               if(tablero.minosAlmacenados[pmino.x][pmino.y]){
-                           return true;
-                       }
-                   }
-               return false;
-            }
-        
-    
-
-
-get estaDentroDelTablero(){
-    for (const pmino of this.mapaTablero) {
+  
+    get estáDentroDelTablero() {
+      for (const pmino of this.mapaTablero) {
         if (pmino.x < 0) {
-            return false;
+          return false;
         }
-        if(pmino.x >= tablero.columnas){
-            return false;
+        if (pmino.x >= tablero.columnas) {
+          return false;
         }
-        if(pmino.y >= tablero.filas){
-            return false;
+        if (pmino.y >= tablero.filas) {
+          return false;
         }
+      }
+      return true;
     }
-    return true;
-}
-
-get mapaTablero(){
-    let retorno = []
-    for(const pmino of this.mapa){
-        let copy =  pmino.copy().add(this.position);
-        retorno.push(tablero.coordenada(copy.x, copy.y))
+  
+    get mapaTablero() {
+      let retorno = [];
+      for (const pmino of this.mapa) {
+        let copy = pmino.copy().add(this.posición);
+        retorno.push(copy);
+      }
+      return retorno;
     }
-    return retorno;
-}
-
-get mapaCanvas(){
-    let retorno = []
-    for(const pmino of this.mapa){
-        let copy =  pmino.copy().add(this.position);
-        retorno.push(copy)
+  
+    get mapaCanvas() {
+      let retorno = [];
+      for (const pmino of this.mapa) {
+        let copy = pmino.copy().add(this.posición);
+        retorno.push(tablero.coordenada(copy.x, copy.y));
+      }
+      return retorno;
     }
-    return retorno;
-}
-
-function crearMapeoBaseTetriminos() {
-    tetriminosBase = {
-        "Z": {
-            color: "red",
-            mapa: [
-                createVector(),
-                createVector(-1, -1),
-                createVector(0, -1),
-                createVector(1, 0)
-
-            ]
-        },
-        "S": {
-            color: "green",
-            mapa: [
-                createVector(),
-                createVector(1, -1),
-                createVector(0, -1),
-                createVector(-1, 0)
-
-
-            ]
-        },
-        "J": {
-            color: "orange",
-            mapa: [
-                createVector(),
-                createVector(-1, 0),
-                createVector(-1, -1),
-                createVector(1, 0)
-
-            ]
-        },
-        "L": {
-            color: "dodgerblue",
-            mapa: [
-                createVector(),
-                createVector(-1, 0),
-                createVector(1, -1),
-                createVector(1, 0)
-
-            ]
-        },
-        "T": {
-            color: "magenta",
-            mapa: [
-                createVector(),
-                createVector(-1, 0),
-                createVector(1, 0),
-                createVector(0, -1)
-
-            ]
-        },
-        "O": {
-            color: "yellow",
-            mapa: [
-                createVector(),
-                createVector(0, -1),
-                createVector(1, -1),
-                createVector(1, 0)
-
-            ]
-        },
-        "I": {
-            color: "cyan",
-            mapa: [
-                createVector(),
-                createVector(-1, 0),
-                createVector(1, 0),
-                createVector(2, 0)
-
-            ]
-        }
-    }
-
+  
     dibujar() {
-        push()
-        fill(this.color);
-        for(const pmino of this.mapaCanvas){
-            Tetrimino.dibujarMino(pmino);
-    
-        }
-        pop()
+      push();
+      fill(this.color);
+      for (const pmino of this.mapaCanvas) {
+        Tetrimino.dibujarMino(pmino);
+      }
+      pop();
+      if (tetrimino == this) {
+        this.dibujarEspectro();
+      }
     }
-    static dibujarMino(pmino){
-        push()
-        noStroke()
-        fill(255, 255, 255, 80)
-        beginShape()
-        vertex(pmino.x, pmino.y)
-        vertex(pmino.x + tablero.lado_celda, pmino.y)
-        vertex(pmino.x + tablero.lado_celda, pmino.y + tablero.lado_celda)
-        endShape(CLOSE)
-        beginShape()
-        fill(0, 0, 0, 80)
-        vertex(pmino.x, pmino.y)
-        vertex(pmino.x, pmino.y + tablero.lado_celda)
-        vertex(pmino.x + tablero.lado_celda, pmino.y + tablero.lado_celda)
-        endShape(CLOSE)
-        pop()
+  
+    dibujarEspectro() {
+      this.espectro = new Tetrimino(this.nombre);
+      this.espectro.posición = this.posición.copy();
+      for (let i = 0; i < this.mapa.length; i++) {
+        this.espectro.mapa[i] = this.mapa[i].copy();
+      }
+      while (this.espectro.moverAbajo());
+      push();
+      drawingContext.globalAlpha = 0.3;
+      this.espectro.dibujar();
+      pop();
     }
+  
+    static dibujarMino(pmino) {
+      rect(pmino.x, pmino.y, tablero.lado_celda);
+      push();
+      noStroke();
+      fill(255, 255, 255, 80);
+      beginShape();
+      vertex(pmino.x, pmino.y);
+      vertex(pmino.x + tablero.lado_celda, pmino.y);
+      vertex(pmino.x + tablero.lado_celda, pmino.y + tablero.lado_celda);
+      endShape(CLOSE);
+      beginShape();
+      fill(0, 0, 0, 80);
+      vertex(pmino.x, pmino.y);
+      vertex(pmino.x, pmino.y + tablero.lado_celda);
+      vertex(pmino.x + tablero.lado_celda, pmino.y + tablero.lado_celda);
+      endShape(CLOSE);
+      pop();
+    }
+  }
+  
+  function crearMapeoBaseTetriminos() {
+    tetriminosBase = {
+      Z: {
+        color: "red",
+        mapa: [
+          createVector(),
+          createVector(-1, -1),
+          createVector(0, -1),
+          createVector(1, 0),
+        ],
+      },
+      S: {
+        color: "lime",
+        mapa: [
+          createVector(),
+          createVector(1, -1),
+          createVector(0, -1),
+          createVector(-1, 0),
+        ],
+      },
+      J: {
+        color: "orange",
+        mapa: [
+          createVector(),
+          createVector(-1, 0),
+          createVector(-1, -1),
+          createVector(1, 0),
+        ],
+      },
+      L: {
+        color: "dodgerblue",
+        mapa: [
+          createVector(),
+          createVector(-1, 0),
+          createVector(1, -1),
+          createVector(1, 0),
+        ],
+      },
+      T: {
+        color: "magenta",
+        mapa: [
+          createVector(),
+          createVector(-1, 0),
+          createVector(1, 0),
+          createVector(0, -1),
+        ],
+      },
+      O: {
+        color: "yellow",
+        mapa: [
+          createVector(),
+          createVector(0, -1),
+          createVector(1, -1),
+          createVector(1, 0),
+        ],
+      },
+      I: {
+        color: "cyan",
+        mapa: [
+          createVector(),
+          createVector(-1, 0),
+          createVector(1, 0),
+          createVector(2, 0),
+        ],
+      },
+  }
 }
+  

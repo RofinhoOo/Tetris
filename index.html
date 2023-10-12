@@ -3,57 +3,60 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Tetris JS</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <title>Tetris JS - Página Principal</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: url('imagenes/tetris.png') no-repeat center center fixed;
+            background-size: 60%;
+            background-attachment: fixed;
+            overflow: hidden;
+           
+        }
+
+        #main-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        #main-container h1 {
+            font-size: 36px;
+            color: rgb(49, 45, 45);
+        }
+
+        .button {
+            padding: 12px 24px;
+            font-size: 20px;
+            background-color: green;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+    </style>
 </head>
 
 <body>
-    <script src="Tablero.js"></script>
-    <script src="Tetrimino.js"></script>
+    <div id="main-container">
+        <button onclick="startGame()" class="button">Jugar</button>
+        <button onclick="showInstructions()" class="button">Instrucciones</button>
+    </div>
+
     <script>
-
-        const MARGEN_TABLERO = 10;  // Margen del tablero
-        let regulador_velocidad_teclas = 0; // Para regular la velocidad de las teclas
-
-        // Ajustar propiedades del canvas
-        function setup() {
-            createCanvas(900, 600);
-            tablero = new Tablero();
-            crearMapeoBaseTetriminos();
-            tetrimino = new Tetrimino();
-            resizeCanvas(
-                tablero.ancho + 2 * MARGEN_TABLERO,
-                tablero.alto + 2 * MARGEN_TABLERO + tablero.lado_celda
-            )
+        function startGame() {
+            // Redirige al juego Tetris (reemplaza 'juego.html' con la ruta correcta a tu juego).
+            window.location.href = 'juego.html';
         }
 
-        function draw() {
-            background("lightgray");
-            tablero.dibujar();
-            tetrimino.dibujar();
-            keyEventsTetris();
+        function showInstructions() {
+            // Redirige a una página de instrucciones (reemplaza 'instrucciones.html' con la ruta correcta).
+            window.location.href = 'instrucciones.html';
         }
-
-        function keyEventsTetris() {
-            if (millis() - regulador_velocidad_teclas < 200) {
-                return;
-            }
-            regulador_velocidad_teclas = millis();
-
-            if (keyIsDown(LEFT_ARROW)) {
-                tetrimino.moverIzquierda();
-            }
-            if (keyIsDown(RIGHT_ARROW)) {
-                tetrimino.moverDerecha(); //tetrimino.position.x++;
-            }
-            if (keyIsDown(UP_ARROW)) {
-                tetrimino.moverArriba();
-            }
-            if (keyIsDown(DOWN_ARROW)) {
-                tetrimino.moverAbajo();
-            }
-        }
-
     </script>
 </body>
 
