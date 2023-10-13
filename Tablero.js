@@ -65,21 +65,10 @@ class Tablero {
       }
     }
   
-    /* 
-    La coordenada es una transformación no lineal donde se aplica un
-    escalamiento (multiplicación) para el ajuste de las medidas y una
-    traslación (suma) para el ajuste de las posiciones.
-  
-    En este caso, no usaremos rotaciones, no se necesita.
-    */
     coordenada(x, y) {
       return createVector(x, y).mult(this.lado_celda).add(this.posición);
     }
   
-    /* 
-    Se encargará del procesamiento lógico para el dibujado 
-    de este elemento 
-    */
     dibujar() {
       push();
       noStroke();
