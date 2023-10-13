@@ -90,6 +90,13 @@
             // Redirige al juego Tetris (reemplaza 'juego.html' con la ruta correcta a tu juego).
             window.location.href = 'juego.html';
         }
+        function enableAudio() {
+            const audio = document.getElementById('backgroundAudio');
+            audio.muted = false;  // Habilitar el audio
+            document.removeEventListener('click', enableAudio);
+        }
+        document.addEventListener('click', enableAudio);
+
 
         function showInstructions() {
             // Redirige a una página de instrucciones (reemplaza 'instrucciones.html' con la ruta correcta).
