@@ -8,24 +8,19 @@
         body {
             margin: 0;
             padding: 0;
-            background: url('imagenes/tetris.png') no-repeat center center fixed;
-            background-size: 60%;
+            background: url('imagenes/tetris.jpg') no-repeat center center fixed;
+            background-size: cover;
             background-attachment: fixed;
             overflow: hidden;
-           
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            height: 100vh;
         }
 
         #main-container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
             text-align: center;
-        }
-
-        #main-container h1 {
-            font-size: 36px;
-            color: rgb(49, 45, 45);
         }
 
         .button {
@@ -36,7 +31,51 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            margin: 10px;
+            margin-bottom: 120px;
+            margin-left: 30px;
+            transition: background-color 0.3s;
+        }
+
+        /* Cambiamos el color de fondo al pasar el mouse sobre el botón */
+        .button:hover {
+            background-color: #4CAF50;
+        }
+
+        /* Estilos específicos para pantallas más pequeñas (teléfonos) */
+        @media (max-width: 768px) {
+            body {
+                background: url('imagenes/tetris.jpg') no-repeat center center fixed;
+                background-size: auto;
+                background-attachment: auto;
+                overflow: hidden;        
+            }
+
+            .button {
+                margin: 0;
+                align-items: center;
+                /* Elimina el margen */
+            }
+        }
+
+        .audio-control {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            color: #fff;
+            background: #000;
+            border: 1px solid #fff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.3s;
+        }
+
+        .audio-control:hover {
+            background: #333;
         }
     </style>
 </head>
@@ -44,7 +83,6 @@
 <body>
     <div id="main-container">
         <button onclick="startGame()" class="button">Jugar</button>
-        <button onclick="showInstructions()" class="button">Instrucciones</button>
     </div>
 
     <script>
@@ -58,6 +96,21 @@
             window.location.href = 'instrucciones.html';
         }
     </script>
+
+    <!-- Elemento de audio -->
+    <audio autoplay loop id="backgroundAudio">
+        <source src="cancionTetris.mp3" type="audio/mpeg">
+        Tu navegador no soporta la etiqueta de audio.
+    </audio>
+    <div class="audio-control" id="audioControl">
+        <i class="fas fa-volume-up"></i>
+    </div>
+
+    <!-- Script de p5.js y código JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+    <script src="script.js"></script>
+
 </body>
 
 </html>
