@@ -24,33 +24,117 @@
         canvas {
             filter: drop-shadow(5px 5px 2px rgba(0, 0, 0, 0.4));
         }
-        .audio-control {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    cursor: pointer;
-    color: #fff;
-    background: #000;
-    border: 1px solid #fff;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: background 0.3s;
-}
 
-.audio-control:hover {
-    background: #333;
-}
+        .multimedia {
+            display: flex;
+            flex-direction: column;
+            /* Cambia la dirección de los elementos a vertical */
+            align-items: flex-end;
+            /* Alinea los elementos a la derecha */
+        }
+
+
+        .audio-control {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            color: #fff;
+            background: #000;
+            border: 1px solid #fff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.3s;
+        }
+
+        .audio-control:hover {
+            background: #333;
+        }
+
+
+        .pausa-control {
+            position: absolute;
+            top: 60px;
+            right: 10px;
+            cursor: pointer;
+            color: #fff;
+            background: #000;
+            border: 1px solid #fff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.3s;
+        }
+
+
+
+
+        .pausa-control:hover {
+            background: #333;
+        }
+
+        .play-control {
+            display: none;
+            /* Para ocultar el botón "Play" inicialmente */
+            position: absolute;
+            top: 60px;
+            /* Ajusta la posición vertical del botón de pausa */
+            right: 10px;
+            cursor: pointer;
+            color: #fff;
+            background: #000;
+            border: 1px solid #fff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.3s;
+        }
+
+        .play-control:hover {
+            background: #333;
+        }
+
+        .pausa-control::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .play-control:before{
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
     </style>
-       <audio autoplay loop id="backgroundAudio">
-        <source src="cancionTetris.mp3" type="audio/mpeg">
-        Tu navegador no soporta la etiqueta de audio.
-    </audio>
-    <div class="audio-control" id="audioControl">
-        <i class="fas fa-volume-up"></i>
+    <div class="multimedia">
+        <audio autoplay loop id="backgroundAudio">
+            <source src="cancionTetris.mp3" type="audio/mpeg">
+            Tu navegador no soporta la etiqueta de audio.
+        </audio>
+        <div class="audio-control" id="audioControl">
+            <i class="fas fa-volume-up"></i>
+        </div>
+        <div class="pausa-control" id="pausaControl">
+            <i class="fas fa-pause"></i>
+        </div>
+        <div class="play-control" id="playControl">
+            <i class="fas fa-play"></i>
+        </div>
     </div>
     <script src="script.js"></script>
     <script>
@@ -93,6 +177,10 @@
         }
 
         function draw() {
+            if (juegoPausado) {
+                // Si el juego está pausado, no actualices el tablero ni el tetrimino
+                return;
+            }
             clear();
             dibujarPuntaje();
             tablero.dibujar();
@@ -113,6 +201,14 @@
             )
 
             pop();
+
+            if (juegoPausado) {
+                push();
+                textSize(32);
+                fill(255, 0, 0);
+                text("Juego Pausado", width / 2 - 120, height / 2);
+                pop();
+            }
         }
 
         let limite_regulador_velocidad_teclas = 100;
