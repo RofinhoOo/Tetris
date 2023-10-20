@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Tetris JS</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
     <script src="Tablero.js"></script>
     <script src="Tetrimino.js"></script>
@@ -112,7 +111,8 @@
             width: 100%;
             height: 100%;
         }
-        .play-control:before{
+
+        .play-control:before {
             content: "";
             position: absolute;
             top: 0;
@@ -157,13 +157,16 @@
         }, 20);
 
         /* Dificultad, hacer caer las piezas cada determinada cantidad de tiempo, simulando una especie de gravedad */
-        setInterval(() => {
+        function velocidad_movimiento_piezas() {
             if (millis() - regulador_de_caida < 300) {
                 return;
             }
             regulador_de_caida = millis();
             tetrimino.moverAbajo();
-        }, 500);
+            console.log(regulador_de_caida)
+        }
+
+        let pause = setInterval(velocidad_movimiento_piezas, 500);
 
         function setup() {
             createCanvas(900, 600);
@@ -177,15 +180,22 @@
         }
 
         function draw() {
+            console.log(juegoPausado)
             if (juegoPausado) {
+                console.log("Funciona")
                 // Si el juego está pausado, no actualices el tablero ni el tetrimino
+                clearInterval(pause);
                 return;
             }
-            clear();
-            dibujarPuntaje();
-            tablero.dibujar();
-            tetrimino.dibujar();
-            keyEventsTetris();
+            else {
+                // Si el juego no está pausado, actualiza el tablero y el tetrimino
+                pause = setInterval(velocidad_movimiento_piezas, 500);
+                clear();
+                dibujarPuntaje();
+                tablero.dibujar();
+                tetrimino.dibujar();
+                keyEventsTetris();
+            }
         }
 
         function dibujarPuntaje() {
@@ -227,7 +237,7 @@
             if (keyIsDown(LEFT_ARROW)) {
                 tetrimino.moverIzquierda();
                 regulador_de_caida = millis();
-            }
+            
             if (keyIsDown(DOWN_ARROW)) {
                 tetrimino.moverAbajo();
                 regulador_de_caida = millis();
@@ -243,7 +253,9 @@
                 regulador_de_caida = millis();
             }
         }
+    }
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
 </body>
 
 </html>
