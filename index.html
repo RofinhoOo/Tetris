@@ -3,36 +3,287 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Tetris JS - Página Principal</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Tetris JS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+    <script src="Tablero.js"></script>
+    <script src="Tetrimino.js"></script>
 </head>
 
 <body>
-    <div id="main-container">
-        <button onclick="startGame()" type="button" class="button">Jugar</button>
-    </div>
-
-    <script>
-        function startGame() {
-            // Redirige al juego Tetris (reemplaza 'juego.html' con la ruta correcta a tu juego).
-            window.location.href = 'juego.html';
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Centra todo verticalmente */
+            background: linear-gradient(90deg, hsl(0, 100%, 50%), hsl(0, 100%, 0%));
         }
-    </script>
 
-    <!-- Elemento de audio -->
-    <audio autoplay loop id="backgroundAudio">
-        <source src="cancionTetris.mp3" type="audio/mpeg">
-        Tu navegador no soporta la etiqueta de audio.
-    </audio>
-    <div class="audio-control" id="audioControl">
-        <i class="fas fa-volume-up"></i>
+        .container-titulo {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            color: white;
+        }
+
+        .titulo {
+            font-size: 48px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-right: 20px;
+            text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3); /* Agregar sombreado */
+        }
+
+        .autor {
+            font-size: 24px;
+            font-style: italic;
+            text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3); /* Agregar sombreado */
+        }
+
+
+        canvas {
+            filter: drop-shadow(5px 5px 2px rgba(0, 0, 0, 0.4));
+            margin-bottom: 60px;
+        }
+
+        .multimedia {
+            display: flex;
+            flex-direction: column;
+            /* Cambia la dirección de los elementos a vertical */
+            align-items: flex-end;
+            /* Alinea los elementos a la derecha */
+        }
+
+
+        .audio-control {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            color: #fff;
+            background: #000;
+            border: 1px solid #fff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.3s;
+        }
+
+        .audio-control:hover {
+            background: #333;
+        }
+
+
+        .pausa-control {
+            position: absolute;
+            top: 60px;
+            right: 10px;
+            cursor: pointer;
+            color: #fff;
+            background: #000;
+            border: 1px solid #fff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.3s;
+        }
+
+
+
+
+        .pausa-control:hover {
+            background: #333;
+        }
+
+        .play-control {
+            display: none;
+            /* Para ocultar el botón "Play" inicialmente */
+            position: absolute;
+            top: 60px;
+            /* Ajusta la posición vertical del botón de pausa */
+            right: 10px;
+            cursor: pointer;
+            color: #fff;
+            background: #000;
+            border: 1px solid #fff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.3s;
+        }
+
+        .play-control:hover {
+            background: #333;
+        }
+
+        .pausa-control::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .play-control:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+    <div class="container-titulo">
+        <h1 class="titulo">Tetris JS</h1>
+        <span class="autor">By Alex Rofes</span>
     </div>
-
-    <!-- Script de p5.js y código JavaScript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+    <div class="multimedia">
+        <audio autoplay loop id="backgroundAudio">
+            <source src="cancionTetris.mp3" type="audio/mpeg">
+            Tu navegador no soporta la etiqueta de audio.
+        </audio>
+        <div class="audio-control" id="audioControl">
+            <i class="fas fa-volume-up"></i>
+        </div>
+        <div class="pausa-control" id="pausaControl">
+            <i class="fas fa-pause"></i>
+        </div>
+        <div class="play-control" id="playControl">
+            <i class="fas fa-play"></i>
+        </div>
+    </div>
     <script src="script.js"></script>
+    <script>
+        const MARGEN_TABLERO = 10;
+        let regulador_velocidad_teclas = 0;
+        let regulador_de_caida = 0;
+        let lineas_hechas = 0;
 
+        /* Generación de fondo dinámico */
+        let angulo_fondo = Math.random() * 360;
+        let tono_fondo = Math.random() * 360;
+        setInterval(() => {
+            document.body.style.background = `linear-gradient(
+                ${angulo_fondo}deg, 
+                hsl(${tono_fondo},100%,50%),
+                hsl(${tono_fondo},100%,0%)
+            )`;
+            angulo_fondo += Math.random();
+            tono_fondo += Math.random();
+        }, 20);
+
+        /* Dificultad, hacer caer las piezas cada determinada cantidad de tiempo, simulando una especie de gravedad */
+        function velocidad_movimiento_piezas() {
+            if (millis() - regulador_de_caida < 300) {
+                return;
+            }
+            regulador_de_caida = millis();
+            tetrimino.moverAbajo();
+            console.log(regulador_de_caida)
+        }
+
+        let pause = setInterval(velocidad_movimiento_piezas, 500);
+
+        function setup() {
+            createCanvas(900, 600);
+            tablero = new Tablero();
+            crearMapeoBaseTetriminos();
+            tetrimino = new Tetrimino();
+            resizeCanvas(
+                tablero.ancho + 2 * MARGEN_TABLERO,
+                tablero.alto + 2 * MARGEN_TABLERO + 2 * tablero.lado_celda
+            );
+        }
+
+        function draw() {
+            console.log(juegoPausado)
+            if (juegoPausado) {
+                console.log("Funciona")
+                // Si el juego está pausado, no actualices el tablero ni el tetrimino
+                clearInterval(pause);
+                return;
+            }
+            else {
+                // Si el juego no está pausado, actualiza el tablero y el tetrimino
+                pause = setInterval(velocidad_movimiento_piezas, 500);
+                clear();
+                dibujarPuntaje();
+                tablero.dibujar();
+                tetrimino.dibujar();
+                keyEventsTetris();
+            }
+        }
+
+        function dibujarPuntaje() {
+            push();
+            textSize(20);
+            strokeWeight(2);
+            stroke("black");
+            fill("white");
+            text(
+                "Líneas: " + lineas_hechas,
+                tablero.posición.x,
+                tablero.posición.y - tablero.lado_celda / 2
+            )
+
+            pop();
+
+            if (juegoPausado) {
+                push();
+                textSize(32);
+                fill(255, 0, 0);
+                text("Juego Pausado", width / 2 - 120, height / 2);
+                pop();
+            }
+        }
+
+        let limite_regulador_velocidad_teclas = 100;
+
+        function keyEventsTetris() {
+            if (millis() - regulador_velocidad_teclas < limite_regulador_velocidad_teclas) {
+                return;
+            }
+            limite_regulador_velocidad_teclas = 100;
+            regulador_velocidad_teclas = millis();
+
+            if (keyIsDown(RIGHT_ARROW)) {
+                tetrimino.moverDerecha();
+                regulador_de_caida = millis();
+            }
+            if (keyIsDown(LEFT_ARROW)) {
+                tetrimino.moverIzquierda();
+                regulador_de_caida = millis();
+            
+            if (keyIsDown(DOWN_ARROW)) {
+                tetrimino.moverAbajo();
+                regulador_de_caida = millis();
+            }
+            if (keyIsDown(UP_ARROW)) {
+                limite_regulador_velocidad_teclas = 150;
+                tetrimino.girar();
+                regulador_de_caida = millis();
+            }
+            if (keyIsDown(32)) {
+                limite_regulador_velocidad_teclas = 200;
+                tetrimino.ponerEnElFondo();
+                regulador_de_caida = millis();
+            }
+        }
+    }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
 </body>
 
 </html>
