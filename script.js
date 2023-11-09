@@ -14,6 +14,50 @@ audioControl.addEventListener('click', () => {
     }
 });
 
+// Escuchar eventos de teclado
+document.addEventListener('keydown', function (event) {
+    // Evitar el comportamiento predeterminado de la tecla si es la flecha arriba o abajo
+    if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+        event.preventDefault();
+
+        // Llamar a la función correspondiente
+        if (event.key === 'ArrowUp') {
+            tetrimino.girar();
+        } else if (event.key === 'ArrowDown') {
+            tetrimino.moverAbajo(); // Llama a tu función para mover hacia abajo rápidamente
+        }
+    }
+});
+
+// Escuchar eventos de teclado y táctiles
+document.addEventListener('keydown', function(event) {
+    handleKeyPress(event.key);
+  });
+  
+  // Escuchar eventos táctiles
+  document.addEventListener('touchstart', function(event) {
+    handleTouch(event.touches[0].clientX, event.touches[0].clientY);
+  });
+  
+  // Función para manejar eventos táctiles
+  function handleTouch(touchX, touchY) {
+    // Determinar si el toque está en la mitad izquierda o derecha de la pantalla
+    if (touchX < window.innerWidth / 2) {
+      tetrimino.moverIzquierda();
+    } else {
+      tetrimino.moverDerecha();
+    }
+  
+    // Determinar si el toque está en la mitad superior o inferior de la pantalla
+    if (touchY < window.innerHeight / 2) {
+      tetrimino.girar();
+    } else {
+      tetrimino.moverAbajo();
+    }
+  }
+  
+
+
 let juegoPausado = false;
 
 function togglePausa() {
