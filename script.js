@@ -29,34 +29,23 @@ document.addEventListener('keydown', function (event) {
     }
 });
 
-// Escuchar eventos de teclado y táctiles
-document.addEventListener('keydown', function(event) {
-    handleKeyPress(event.key);
-  });
-  
-  // Escuchar eventos táctiles
-  document.addEventListener('touchstart', function(event) {
-    handleTouch(event.touches[0].clientX, event.touches[0].clientY);
-  });
-  
-  // Función para manejar eventos táctiles
-  function handleTouch(touchX, touchY) {
-    // Determinar si el toque está en la mitad izquierda o derecha de la pantalla
-    if (touchX < window.innerWidth / 2) {
-      tetrimino.moverIzquierda();
-    } else {
-      tetrimino.moverDerecha();
-    }
-  
-    // Determinar si el toque está en la mitad superior o inferior de la pantalla
-    if (touchY < window.innerHeight / 2) {
-      tetrimino.girar();
-    } else {
-      tetrimino.moverAbajo();
-    }
-  }
-  
+let ultimoClick = 0;
+let tiempoDobleClic = 500; // Ajusta este valor según tus preferencias
 
+// Escuchar eventos táctiles
+document.addEventListener('touchstart', function(event) {
+    // Obtén el tiempo actual
+    let tiempoActual = new Date().getTime();
+
+    // Verifica si ha pasado el tiempo suficiente desde el último clic
+    if (tiempoActual - ultimoClick <= tiempoDobleClic) {
+        // Es un doble clic, llama a la función para girar el tetrimino
+        tetrimino.girar();
+    }
+
+    // Actualiza el tiempo del último clic
+    ultimoClick = tiempoActual;
+});
 
 let juegoPausado = false;
 
@@ -75,14 +64,7 @@ function togglePausa() {
     }
 }
 
-
-
-
 document.getElementById('pausaControl').addEventListener('click', togglePausa);
 document.getElementById('playControl').style.display = 'block'; // Muestra el botón "Play"
 document.getElementById('playControl').addEventListener('click', togglePausa);
 document.getElementById('playControl').style.display = 'none'; // Oculta el botón "Play"
-
-
-
-
