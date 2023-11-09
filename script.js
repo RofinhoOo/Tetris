@@ -34,9 +34,6 @@ let tiempoDobleClic = 500; // Ajusta este valor según tus preferencias
 
 // Escuchar eventos táctiles
 document.addEventListener('touchstart', function (event) {
-  // Evita que la pantalla se desplace al doble clic
-  event.preventDefault();
-
   // Obtén el tiempo actual
   let tiempoActual = new Date().getTime();
 
@@ -45,7 +42,10 @@ document.addEventListener('touchstart', function (event) {
     // Es un doble clic, llama a la función para girar el tetrimino
     tetrimino.girar();
   } else {
-    // Es un clic sencillo, determina si tocaste la mitad izquierda o derecha de la pantalla
+    // Es un clic sencillo, evita el desplazamiento de la pantalla
+    event.preventDefault();
+
+    // Determina si tocaste la mitad izquierda o derecha de la pantalla
     let touchX = event.touches[0].clientX;
     if (touchX < window.innerWidth / 2) {
       tetrimino.moverIzquierda();
