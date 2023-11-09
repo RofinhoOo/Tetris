@@ -39,32 +39,43 @@ document.addEventListener('touchstart', function (event) {
   touchStartY = event.touches[0].clientY;
 });
 
+// let touchStartX = 0;
+// let touchStartY = 0;
+let ultimoClick = 0;
+let tiempoDobleClic = 500; // Ajusta este valor según tus preferencias
+
 // Escuchar eventos táctiles de liberación
 document.addEventListener('touchend', function (event) {
-
   event.preventDefault(); // Evitar el comportamiento predeterminado de la tecla si es la flecha arriba o abajo
-  // Calcular la distancia horizontal y vertical del desplazamiento
-  const deltaX = event.changedTouches[0].clientX - touchStartX;
-  const deltaY = event.changedTouches[0].clientY - touchStartY;
 
-  // Establecer un umbral para el desplazamiento (ajusta según sea necesario)
-  const threshold = 30;
+  // Obtén el tiempo actual
+  let tiempoActual = new Date().getTime();
 
-  // Determinar si el desplazamiento es horizontal o vertical y actuar en consecuencia
-  if (Math.abs(deltaX) > Math.abs(deltaY)) {
-    // Desplazamiento horizontal
-    if (deltaX > threshold) {
-      tetrimino.moverDerecha();
-    } else if (deltaX < -threshold) {
-      tetrimino.moverIzquierda();
-    }
+  // Verifica si ha pasado el tiempo suficiente desde el último clic
+  if (tiempoActual - ultimoClick <= tiempoDobleClic) {
+    // Es un doble clic, llama a la función para girar el tetrimino
+    tetrimino.girar();
   } else {
-    // Desplazamiento vertical
-    if (deltaY > threshold) {
-      tetrimino.moverAbajo();
+    // Es un clic sencillo, evita el desplazamiento de la pantalla
+    const deltaX = event.changedTouches[0].clientX - touchStartX;
+    const deltaY = event.changedTouches[0].clientY - touchStartY;
+    const threshold = 30;
+
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      if (deltaX > threshold) {
+        tetrimino.moverDerecha();
+      } else if (deltaX < -threshold) {
+        tetrimino.moverIzquierda();
+      }
+    } else {
+      if (deltaY > threshold) {
+        tetrimino.moverAbajo();
+      }
     }
-    // No necesitas manejar el desplazamiento hacia arriba en este caso
   }
+
+  // Actualiza el tiempo del último clic
+  ultimoClick = tiempoActual;
 });
 
 
