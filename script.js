@@ -41,6 +41,8 @@ document.addEventListener('touchstart', function (event) {
 
 // Escuchar eventos táctiles de liberación
 document.addEventListener('touchend', function (event) {
+
+  event.preventDefault(); // Evitar el comportamiento predeterminado de la tecla si es la flecha arriba o abajo
   // Calcular la distancia horizontal y vertical del desplazamiento
   const deltaX = event.changedTouches[0].clientX - touchStartX;
   const deltaY = event.changedTouches[0].clientY - touchStartY;
@@ -65,7 +67,7 @@ document.addEventListener('touchend', function (event) {
   }
 });
 
-// Resto del código...
+
 
 let juegoPausado = false;
 
